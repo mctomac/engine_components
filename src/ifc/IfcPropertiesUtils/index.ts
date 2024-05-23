@@ -29,6 +29,12 @@ export class IfcPropertiesUtils {
       if (unit.Name.value === "FOOT") {
         unitValue = 0.3048;
       }
+      if (unit.Prefix?.value === "DECI") {
+        factor = 0.1;
+      }
+      if (unit.Prefix?.value === "CENTI") {
+        factor = 0.01;
+      }
       if (unit.Prefix?.value === "MILLI") {
         factor = 0.001;
       }
