@@ -224,7 +224,7 @@ export class FragmentPlans
     }
   }
 
-  async updatePlansList() {
+  async updatePlansList(model?: FRAGS.FragmentsGroup) {
     if (!this.components.uiEnabled) {
       return;
     }
@@ -245,7 +245,8 @@ export class FragmentPlans
     const commandsExist = commandsMenu.hasCommands;
 
     for (const plan of this._plans) {
-      const height = Math.trunc(plan.point.y * 10) / 10;
+      let height = plan.point.y - (model?.coordinationMatrix.elements[13] ?? 0);
+      height = Math.trunc(height * 10) / 10;
       const description = `Height: ${height}`;
 
       const simpleCard = new SimpleUICard(this.components);
