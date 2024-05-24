@@ -29,9 +29,55 @@ export class IfcPropertiesUtils {
       if (unit.Name.value === "FOOT") {
         unitValue = 0.3048;
       }
-      if (unit.Prefix?.value === "MILLI") {
-        factor = 0.001;
+
+      switch (unit.Prefix?.value) {
+        case "EXA":
+          factor = 1e18;
+          break;
+        case "PETA":
+          factor = 1e15;
+          break;
+        case "TERA":
+          factor = 1e12;
+          break;
+        case "GIGA":
+          factor = 1e9;
+          break;
+        case "KILO":
+          factor = 1e3;
+          break;
+        case "HECTO":
+          factor = 1e2;
+          break;
+        case "DECA":
+          factor = 1e1;
+          break;
+        case "DECI":
+          factor = 1e-1;
+          break;
+        case "CENTI":
+          factor = 1e-2;
+          break;
+        case "MILLI":
+          factor = 1e-3;
+          break;
+        case "MICRO":
+          factor = 1e-6;
+          break;
+        case "NANO":
+          factor = 1e-9;
+          break;
+        case "PICO":
+          factor = 1e-12;
+          break;
+        case "FEMTO":
+          factor = 1e-15;
+          break;
+        case "ATTO":
+          factor = 1e-18;
+          break;
       }
+
       return unitValue * factor;
     }
     return 1;
@@ -69,11 +115,11 @@ export class IfcPropertiesUtils {
 
       const isRelation = prop.type === relationType;
       const relatingKey = Object.keys(prop).find((key) =>
-        key.startsWith("Relating"),
+        key.startsWith("Relating")
       );
 
       const relatedKey = Object.keys(prop).find((key) =>
-        key.startsWith("Related"),
+        key.startsWith("Related")
       );
 
       if (!(isRelation && relatingKey && relatedKey)) continue;
@@ -185,8 +231,8 @@ export class IfcPropertiesUtils {
     if (!quantity) {
       return { key: null, value: null };
     }
-    const key =
-      Object.keys(quantity).find((key) => key.endsWith("Value")) ?? null;
+    const key = Object.keys(quantity).find((key) => key.endsWith("Value")) ??
+      null;
     let value;
     if (key === null) {
       value = null;
