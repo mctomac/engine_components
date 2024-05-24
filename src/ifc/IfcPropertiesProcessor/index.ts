@@ -2,7 +2,7 @@ import * as WEBIFC from "web-ifc";
 import { FragmentsGroup, IfcProperties } from "bim-fragment";
 import { IfcPropertiesUtils } from "../IfcPropertiesUtils";
 import { Button, FloatingWindow, SimpleUIComponent, TreeView } from "../../ui";
-import { Component, Disposable, Event, UI, UIElement } from "../../base-types";
+import { Disposable, Event, UI, UIElement, Component } from "../../base-types";
 import { Components, ToolComponent } from "../../core";
 import { IfcPropertiesManager } from "../IfcPropertiesManager";
 import { IfcCategoryMap } from "../ifc-category-map";
@@ -24,8 +24,10 @@ type RenderFunction = (
   ...args: any
 ) => Promise<TreeView[] | TreeView | null>;
 
-export class IfcPropertiesProcessor extends Component<IndexMap>
-  implements UI, Disposable {
+export class IfcPropertiesProcessor
+  extends Component<IndexMap>
+  implements UI, Disposable
+{
   static readonly uuid = "23a889ab-83b3-44a4-8bee-ead83438370b" as const;
 
   /** {@link Disposable.onDisposed} */
@@ -93,7 +95,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
           model,
           psetID,
           propID,
-          "NominalValue",
+          "NominalValue"
         );
         if (tag) psetUI.addChild(tag);
       });
@@ -156,8 +158,8 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
 
   async getProperties(model: FragmentsGroup, id: string) {
     if (!model.hasProperties) return null;
-    const modelProperties: IfcProperties | undefined = model
-      .getLocalProperties();
+    const modelProperties: IfcProperties | undefined =
+      model.getLocalProperties();
     if (modelProperties === undefined) {
       return null;
     }
@@ -217,7 +219,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
 
     const propsList = new SimpleUIComponent(
       this.components,
-      `<div class="flex flex-col"></div>`,
+      `<div class="flex flex-col"></div>`
     );
 
     const main = new Button(this.components, {
@@ -257,9 +259,8 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
       }
       const propsList = this.uiElement.get("propsList");
       await propsList.dispose(true);
-      const propsWindow = this.uiElement.get<FloatingWindow>(
-        "propertiesWindow",
-      );
+      const propsWindow =
+        this.uiElement.get<FloatingWindow>("propertiesWindow");
       propsWindow.description = null;
       propsList.children = [];
     }
@@ -303,20 +304,14 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
           for (const expressID of relatedIDs) {
             this.setEntityIndex(model, expressID).add(relationID);
           }
-        },
+        }
       );
     }
   }
 
-  async renderProperties(
-    model: FragmentsGroup,
-    expressID: number,
-    append: boolean = false,
-  ) {
+  async renderProperties(model: FragmentsGroup, expressID: number) {
     if (!this.components.uiEnabled) return;
-    if (!append) {
-      await this.cleanPropertiesList();
-    }
+    await this.cleanPropertiesList();
     const topToolbar = this.uiElement.get("topToolbar");
     const propsList = this.uiElement.get("propsList");
     const propsWindow = this.uiElement.get<FloatingWindow>("propertiesWindow");
@@ -348,9 +343,8 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
     const ignorable = this.entitiesToIgnore.includes(entity?.type);
     if (!entity || ignorable) return null;
 
-    if (entity.type === WEBIFC.IFCPROPERTYSET) {
+    if (entity.type === WEBIFC.IFCPROPERTYSET)
       return this.newPsetUI(model, expressID);
-    }
 
     const mainGroup = await this.newEntityTree(model, expressID);
     if (!mainGroup) return null;
@@ -365,8 +359,8 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
         const entity = await model.getProperties(id);
         if (!entity) continue;
 
-        const renderFunction = this._renderFunctions[entity.type] ??
-          this._renderFunctions[0];
+        const renderFunction =
+          this._renderFunctions[entity.type] ?? this._renderFunctions[0];
 
         const ui = modelElementsIndexation[id]
           ? await this.newEntityUI(model, id)
@@ -383,9 +377,8 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
   }
 
   private setEntityIndex(model: FragmentsGroup, expressID: number) {
-    if (!this._indexMap[model.uuid][expressID]) {
+    if (!this._indexMap[model.uuid][expressID])
       this._indexMap[model.uuid][expressID] = new Set();
-    }
     return this._indexMap[model.uuid][expressID];
   }
 
@@ -395,7 +388,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
       this.components,
       this,
       model,
-      expressID,
+      expressID
     );
     attributesGroup.attributesToIgnore = this.attributesToIgnore;
     return [attributesGroup];
@@ -428,12 +421,12 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
             model,
             psetID,
             propID,
-            "NominalValue",
+            "NominalValue"
           );
           if (tag) {
             uiGroup.addChild(tag);
           }
-        },
+        }
       );
 
       if (!psetPropsID || psetPropsID.length === 0) {
@@ -472,14 +465,14 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
       async (quantityID) => {
         const { key } = await IfcPropertiesUtils.getQuantityValue(
           model,
-          quantityID,
+          quantityID
         );
         if (!key) return;
         const tag = await this.newPropertyTag(model, qsetID, quantityID, key);
         if (tag) {
           uiGroup.addChild(tag);
         }
-      },
+      }
     );
     uiGroups.push(uiGroup);
     return uiGroups;
@@ -488,7 +481,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
   private async addPsetActions(
     model: FragmentsGroup,
     psetID: number,
-    uiGroup: TreeView,
+    uiGroup: TreeView
   ) {
     if (!this.propertiesManager) return;
     const propsUI = this.propertiesManager.uiElement;
@@ -497,7 +490,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
     const event = await this.propertiesManager.setAttributeListener(
       model,
       psetID,
-      "Name",
+      "Name"
     );
     event.add((v: String) => (uiGroup.description = v.toString()));
     uiGroup.innerElements.titleContainer.onmouseenter = () => {
@@ -514,7 +507,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
   private addEntityActions(
     model: FragmentsGroup,
     expressID: number,
-    uiGroup: TreeView,
+    uiGroup: TreeView
   ) {
     if (!this.propertiesManager) return;
     const propsUI = this.propertiesManager.uiElement;
@@ -548,7 +541,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
     model: FragmentsGroup,
     setID: number,
     expressID: number,
-    valueKey: string,
+    valueKey: string
   ) {
     const entity = await model.getProperties(expressID);
     if (!entity) {
@@ -580,7 +573,7 @@ export class IfcPropertiesProcessor extends Component<IndexMap>
 
   private cloneProperty(
     item: { [name: string]: any },
-    result: { [name: string]: any } = {},
+    result: { [name: string]: any } = {}
   ) {
     if (!item) {
       return result;
